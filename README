@@ -1,0 +1,62 @@
+What is this?
+=============
+
+Probably one of the stupidest ideas, but here's a simple django app that'll let
+you automatically include your views args values into the context.
+
+Why?
+===
+
+Say we have a view latest_tagged_objects that lists the latest objects tagged
+with a given tag.
+
+def latest_tagged_objects(request, obj, limit, tag):
+    """
+    Displays the 'limit' latest objects 'obj' tagged with 'tag'
+    """
+    # Retrieve these objects
+
+    #create a context that will include the args passed to this view along with
+    #other variables
+
+    context = dict(
+        obj=obj,
+        limit=limit,
+        tag=tag,
+        #Other variables here
+    )
+
+Now, this is just an example and that could be done with generic views, right.
+But my problem is with including the arguments passed to my view in the context
+each and everytime.
+
+And here comes my stupidest idea. Honestly, I don't know if this is done before
+and whether it is a good practice or not, but I wrote a simple middleware and
+context processor that together put views names and arguments in templates
+contexts automatically.
+
+Mind you, this took me less than 5 minutes and this why I wonder if it is worth
+sharing.
+
+How to use it?
+==============
+
+1) Add viewctx.middleware.ViewMiddleware to your middlewares in settings.py
+2) Add viewctx.context_processors.view to your context processors in settings.py
+
+In your templates from now on, you can simply use for eg.
+
+{% if view.view_name == 'blog.latest_tagged_posts' %} 
+i.e. the view calling this template is blog.latest_tagged_posts
+
+Or something like:
+
+<h2>{% view.kwargs.limit %} recent posts</h2>
+
+instead of explecitely adding the 'limit' variable to your view's context.
+
+In other words, all the arguments passed to your view, and the view name are
+added to the context in respectively: view.kwars.argument_name and
+view.view_name
+
+# Note to self: Write better doc. No, really.
